@@ -1,23 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class TicTacToeFrame extends JFrame {
-    Game game = new Game();
+public class TicTacToeGui {
+    private JFrame frame;
+    private final Game game = new Game();
     TTTBoard tttboard = new TTTBoard();
 
-    public TicTacToeFrame() {
-        setTitle("TicTacToe");
-        setSize(500, 500);
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public TicTacToeGui() {
 
-        gamePanel();
-        bottomPanel();
 
-        setVisible(true);
+        frame = new JFrame("Tic Tac Toe");
+        frame.setSize(500, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.add(gamePanel(), BorderLayout.CENTER);
+        frame.add(bottomPanel(), BorderLayout.SOUTH);
+        frame.setVisible(true);
     }
 
-    public void gamePanel() {
+    public JPanel gamePanel() {
         JPanel tileButtonPanel = new JPanel();
         tileButtonPanel.setLayout(new GridLayout(3, 3));
         tileButtonPanel.setBackground(Color.white);
@@ -50,7 +52,7 @@ public class TicTacToeFrame extends JFrame {
                         return;
                     }
 
-                    // set the move for the current player
+
                     tttboard.setValue(finalRow, finalCol, currentPlayerValue);
 
 
@@ -73,7 +75,9 @@ public class TicTacToeFrame extends JFrame {
 
                         if (playAgain == JOptionPane.YES_OPTION) {
                             tttboard.clearBoard();
-                            new TicTacToeFrame(); // restart game
+                            frame.dispose();
+                            new TicTacToeGui();
+
 
 
                         } else {
@@ -84,31 +88,34 @@ public class TicTacToeFrame extends JFrame {
 
 
 
-                // check for tie
-                if (game.isTie()) {
-                    int playAgain = JOptionPane.showOptionDialog(
-                            null,
-                            "It's a tie! Do you want to play again?",
-                            "Game Over",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            new String[]{"Yes", "No"},
-                            "Yes"
-                    );
+                    // check for tie
+                    if (game.isTie()) {
+                        int playAgain = JOptionPane.showOptionDialog(
+                                null,
+                                "It's a tie! Do you want to play again?",
+                                "Game Over",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.INFORMATION_MESSAGE,
+                                null,
+                                new String[]{"Yes", "No"},
+                                "Yes"
+                        );
 
-                    if (playAgain == JOptionPane.YES_OPTION) {
-                        tttboard.clearBoard();
-                        new TicTacToeFrame(); // restart game
+                        if (playAgain == JOptionPane.YES_OPTION) {
+                            tttboard.clearBoard();
+                            frame.dispose();
+                            new TicTacToeGui();
 
 
-                    } else {
-                        System.exit(0);
+
+
+                        } else {
+                            System.exit(0);
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                game.changePlayer();
+                    game.changePlayer();
 
                 });
 
@@ -120,15 +127,17 @@ public class TicTacToeFrame extends JFrame {
 
         }
         // add panel and refresh frame
-        this.add(tileButtonPanel, BorderLayout.CENTER);
-        this.revalidate();
-        this.repaint();
+        frame.add(tileButtonPanel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+
+        return tileButtonPanel;
 
     }
 
 
 
-    public void bottomPanel() {
+    public JPanel bottomPanel() {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // adds spacing around components
         bottomPanel.setBackground(Color.white);
@@ -144,9 +153,28 @@ public class TicTacToeFrame extends JFrame {
         });
 
         bottomPanel.add(quitButton);
-        add(bottomPanel, BorderLayout.SOUTH);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
+
+        return bottomPanel;
     }
+
+    private void refreshBoard() {
+        frame.getContentPane().removeAll();
+        frame.add(gamePanel(), BorderLayout.CENTER);
+        frame.add(bottomPanel(), BorderLayout.SOUTH);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(TicTacToeGui::new);
+    }
+
+
+
 }
+
 
 
 
